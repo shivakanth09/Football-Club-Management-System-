@@ -1,4 +1,4 @@
-g-- Table: Teams
+-- Table: Teams
 -- Functional Dependencies: team_id → name, founded_year, city
 CREATE TABLE Teams (
     team_id SERIAL PRIMARY KEY,

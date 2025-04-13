@@ -14,3 +14,16 @@ def connect_db():
         user="postgres",
         password="shiva2025"
     )
+
+# Add Team
+def add_team():
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Teams (name, founded_year, city) VALUES (%s, %s, %s)",
+                    (team_name.get(), team_year.get(), team_city.get()))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo("Success", "Team added successfully")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))

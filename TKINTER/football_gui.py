@@ -148,3 +148,13 @@ root.geometry("900x700")
 # Create a scrollable frame
 scrollable_frame = ctk.CTkScrollableFrame(root, width=880, height=680)
 scrollable_frame.pack(pady=10, padx=10, fill="both", expand=True)
+
+# Table display
+import tkinter as tk
+from tkinter import ttk
+
+tree = ttk.Treeview(scrollable_frame, columns=("Name", "Position", "Team"), show='headings')
+tree.heading("Name", text="Name")
+tree.heading("Position", text="Position")
+tree.heading("Team", text="Team")
+tree.pack(pady=10, padx=10, fill="both", expand=True)

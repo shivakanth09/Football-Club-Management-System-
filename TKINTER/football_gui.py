@@ -114,3 +114,27 @@ away_score = ctk.CTkEntry(match_frame, placeholder_text="Away Score")
 away_score.pack(pady=5)
 
 ctk.CTkButton(match_frame, text="Add Match", command=add_match).pack(pady=5)
+
+# View Players with Teams
+def view_players():
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT p.name, p.position, t.name 
+            FROM Players p JOIN Teams t ON p.team_id = t.team_id
+        """)
+        rows = cur.fetchall()
+        conn.close()
+        for item in tree.get_children():
+            tree.delete(item)
+        for row in rows:
+            tree.insert("", "end", values=row)
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+# View Players with Teams
+view_frame = ctk.CTkFrame(scrollable_frame)
+view_frame.pack(pady=10, padx=10, fill="x")
+
+ctk.CTkButton(view_frame, text="View Players with Teams", command=view_players).pack(pady=5)

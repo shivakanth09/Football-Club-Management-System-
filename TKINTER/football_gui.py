@@ -1,12 +1,12 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import psycopg
+import tkinter as tk
+from tkinter import ttk
 
-# Configure appearance
-ctk.set_appearance_mode("System")  # Options: "System", "Dark", "Light"
-ctk.set_default_color_theme("blue")  # Options: "blue", "green", "dark-blue"
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-# Establish PostgreSQL connection
 def connect_db():
     return psycopg.connect(
         host="localhost",
@@ -15,7 +15,6 @@ def connect_db():
         password="shiva2025"
     )
 
-# Add Team
 def add_team():
     try:
         conn = connect_db()
@@ -28,9 +27,6 @@ def add_team():
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
-
-# Add Player
 def add_player():
     try:
         conn = connect_db()
@@ -43,9 +39,6 @@ def add_player():
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
-
-# Add Match
 def add_match():
     try:
         conn = connect_db()
@@ -58,8 +51,6 @@ def add_match():
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
-# View Players with Teams
 def view_players():
     try:
         conn = connect_db()
@@ -78,73 +69,95 @@ def view_players():
         messagebox.showerror("Error", str(e))
 
 
-
-# GUI setup
 root = ctk.CTk()
 root.title("Football Club Management System")
-root.geometry("900x700")
+root.geometry("1000x800")
 
-# Create a scrollable frame
-scrollable_frame = ctk.CTkScrollableFrame(root, width=880, height=680)
+scrollable_frame = ctk.CTkScrollableFrame(root, width=980, height=780)
 scrollable_frame.pack(pady=10, padx=10, fill="both", expand=True)
 
-# Team Section
-team_frame = ctk.CTkFrame(scrollable_frame)
-team_frame.pack(pady=10, padx=10, fill="x")
-ctk.CTkLabel(team_frame, text="Add Team", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=5)
-team_name = ctk.CTkEntry(team_frame, placeholder_text="Team Name")
-team_name.pack(pady=5)
-team_year = ctk.CTkEntry(team_frame, placeholder_text="Founded Year")
-team_year.pack(pady=5)
-team_city = ctk.CTkEntry(team_frame, placeholder_text="City")
-team_city.pack(pady=5)
-ctk.CTkButton(team_frame, text="Add Team", command=add_team).pack(pady=5)
+heading = ctk.CTkLabel(scrollable_frame, text="⚽ Football Club Management", font=ctk.CTkFont(size=24, weight="bold"))
+heading.pack(pady=20)
 
-# Player Section
-player_frame = ctk.CTkFrame(scrollable_frame)
-player_frame.pack(pady=10, padx=10, fill="x")
-ctk.CTkLabel(player_frame, text="Add Player", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=5)
-player_name = ctk.CTkEntry(player_frame, placeholder_text="Player Name")
-player_name.pack(pady=5)
-player_position = ctk.CTkEntry(player_frame, placeholder_text="Position")
-player_position.pack(pady=5)
-player_age = ctk.CTkEntry(player_frame, placeholder_text="Age")
-player_age.pack(pady=5)
-player_team_id = ctk.CTkEntry(player_frame, placeholder_text="Team ID")
-player_team_id.pack(pady=5)
-ctk.CTkButton(player_frame, text="Add Player", command=add_player).pack(pady=5)
-
-# Match Section
-match_frame = ctk.CTkFrame(scrollable_frame)
-match_frame.pack(pady=10, padx=10, fill="x")
-ctk.CTkLabel(match_frame, text="Add Match", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=5)
-home_team_id = ctk.CTkEntry(match_frame, placeholder_text="Home Team ID")
-home_team_id.pack(pady=5)
-away_team_id = ctk.CTkEntry(match_frame, placeholder_text="Away Team ID")
-away_team_id.pack(pady=5)
-match_date = ctk.CTkEntry(match_frame, placeholder_text="Match Date (YYYY-MM-DD)")
-match_date.pack(pady=5)
-home_score = ctk.CTkEntry(match_frame, placeholder_text="Home Score")
-home_score.pack(pady=5)
-away_score = ctk.CTkEntry(match_frame, placeholder_text="Away Score")
-away_score.pack(pady=5)
-ctk.CTkButton(match_frame, text="Add Match", command=add_match).pack(pady=5)
-
-# View Players with Teams
-view_frame = ctk.CTkFrame(scrollable_frame)
-view_frame.pack(pady=10, padx=10, fill="x")
-ctk.CTkButton(view_frame, text="View Players with Teams", command=view_players).pack(pady=5)
+def create_labeled_entry(parent, label, variable, placeholder):
+    row = ctk.CTkFrame(parent, fg_color="transparent")
+    row.pack(fill="x", pady=4)
+    ctk.CTkLabel(row, text=label, width=150, anchor="w").pack(side="left", padx=5)
+    entry = ctk.CTkEntry(row, textvariable=variable, placeholder_text=placeholder, width=500)
+    entry.pack(side="left", padx=5)
+    return entry
 
 
-# Table display
-import tkinter as tk
-from tkinter import ttk
+def create_section(title, fields, button_text, button_command):
+    wrapper = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
+    wrapper.pack(pady=10, fill="both")
+    
+    section = ctk.CTkFrame(wrapper, width=700, corner_radius=12)
+    section.pack(pady=10)
+    section.pack_propagate(False)
+    
+    ctk.CTkLabel(section, text=title, font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+    
+    for label, var, placeholder in fields:
+        create_labeled_entry(section, label, var, placeholder)
+    
+    ctk.CTkButton(section, text=button_text, command=button_command).pack(pady=10)
 
-tree = ttk.Treeview(scrollable_frame, columns=("Name", "Position", "Team"), show='headings')
-tree.heading("Name", text="Name")
+
+team_name = ctk.StringVar()
+team_year = ctk.StringVar()
+team_city = ctk.StringVar()
+create_section("🏟️ Add Team", [
+    ("Team Name:", team_name, "e.g. Real Madrid"),
+    ("Founded Year:", team_year, "e.g. 1902"),
+    ("City:", team_city, "e.g. Madrid"),
+], "Add Team", add_team)
+
+
+player_name = ctk.StringVar()
+player_position = ctk.StringVar()
+player_age = ctk.StringVar()
+player_team_id = ctk.StringVar()
+create_section("👟 Add Player", [
+    ("Player Name:", player_name, "e.g. Messi"),
+    ("Position:", player_position, "e.g. Forward"),
+    ("Age:", player_age, "e.g. 35"),
+    ("Team ID:", player_team_id, "e.g. 1"),
+], "Add Player", add_player)
+
+
+home_team_id = ctk.StringVar()
+away_team_id = ctk.StringVar()
+match_date = ctk.StringVar()
+home_score = ctk.StringVar()
+away_score = ctk.StringVar()
+create_section("🏆 Add Match", [
+    ("Home Team ID:", home_team_id, "e.g. 1"),
+    ("Away Team ID:", away_team_id, "e.g. 2"),
+    ("Match Date:", match_date, "YYYY-MM-DD"),
+    ("Home Score:", home_score, "e.g. 3"),
+    ("Away Score:", away_score, "e.g. 2"),
+], "Add Match", add_match)
+
+
+view_wrapper = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
+view_wrapper.pack(pady=10, fill="both")
+view_section = ctk.CTkFrame(view_wrapper, width=700, corner_radius=12)
+view_section.pack(pady=10)
+view_section.pack_propagate(False)
+ctk.CTkLabel(view_section, text="📋 View Players with Teams", font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+ctk.CTkButton(view_section, text="Load Players", command=view_players).pack(pady=10)
+
+
+tree = ttk.Treeview(scrollable_frame, columns=("Name", "Position", "Team"), show='headings', height=10)
+tree.heading("Name", text="Player Name")
 tree.heading("Position", text="Position")
 tree.heading("Team", text="Team")
-tree.pack(pady=10, padx=10, fill="both", expand=True)
+tree.pack(pady=20, padx=20, fill="both", expand=True)
 
+style = ttk.Style()
+style.theme_use("clam")
+style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
+style.configure("Treeview", font=("Arial", 11), rowheight=30)
 
 root.mainloop()

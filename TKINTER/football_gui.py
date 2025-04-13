@@ -138,3 +138,13 @@ view_frame = ctk.CTkFrame(scrollable_frame)
 view_frame.pack(pady=10, padx=10, fill="x")
 
 ctk.CTkButton(view_frame, text="View Players with Teams", command=view_players).pack(pady=5)
+
+
+# GUI setup
+root = ctk.CTk()
+root.title("Football Club Management System")
+root.geometry("900x700")
+
+# Create a scrollable frame
+scrollable_frame = ctk.CTkScrollableFrame(root, width=880, height=680)
+scrollable_frame.pack(pady=10, padx=10, fill="both", expand=True)

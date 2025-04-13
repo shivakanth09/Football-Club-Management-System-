@@ -77,3 +77,40 @@ player_team_id = ctk.CTkEntry(player_frame, placeholder_text="Team ID")
 player_team_id.pack(pady=5)
 
 ctk.CTkButton(player_frame, text="Add Player", command=add_player).pack(pady=5)
+
+
+# Add Match
+def add_match():
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Matches (home_team_id, away_team_id, date, home_score, away_score) VALUES (%s, %s, %s, %s, %s)",
+                    (home_team_id.get(), away_team_id.get(), match_date.get(), home_score.get(), away_score.get()))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo("Success", "Match added successfully")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+# Match Section
+match_frame = ctk.CTkFrame(scrollable_frame)
+match_frame.pack(pady=10, padx=10, fill="x")
+
+ctk.CTkLabel(match_frame, text="Add Match", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=5)
+
+home_team_id = ctk.CTkEntry(match_frame, placeholder_text="Home Team ID")
+home_team_id.pack(pady=5)
+
+away_team_id = ctk.CTkEntry(match_frame, placeholder_text="Away Team ID")
+away_team_id.pack(pady=5)
+
+match_date = ctk.CTkEntry(match_frame, placeholder_text="Match Date (YYYY-MM-DD)")
+match_date.pack(pady=5)
+
+home_score = ctk.CTkEntry(match_frame, placeholder_text="Home Score")
+home_score.pack(pady=5)
+
+away_score = ctk.CTkEntry(match_frame, placeholder_text="Away Score")
+away_score.pack(pady=5)
+
+ctk.CTkButton(match_frame, text="Add Match", command=add_match).pack(pady=5)

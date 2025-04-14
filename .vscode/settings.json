@@ -3,13 +3,13 @@
     {
       "previewLimit": 50,
       "server": "localhost",
-      "port": 5322, #Replace with your port
+      "port": 5322, 
       "driver": "PostgreSQL",
       "name": "Postgresconn",
       "database": "Football-Club-Management-System",
-      "username": "####",   #Replace with your Username
-      "password": "####",   #Replace with your Password
-      "connectionTimeout": 30
+      "username": "####",   
+      "password": "####",   
+      "connectionTimeout": 30 
     }
   ]
 }

@@ -51,6 +51,19 @@ def add_match():
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
+def add_coach():
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Coaches (name, role, team_id) VALUES (%s, %s, %s)",
+                    (coach_name.get(), coach_role.get(), coach_team_id.get()))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo("Success", "Coach added successfully")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+
 def view_players():
     try:
         conn = connect_db()
@@ -67,6 +80,27 @@ def view_players():
             tree.insert("", "end", values=row)
     except Exception as e:
         messagebox.showerror("Error", str(e))
+
+def view_coaches():
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT c.name, c.role, t.name
+            FROM Coaches c
+            JOIN Teams t ON c.team_id = t.team_id
+        """)
+        rows = cur.fetchall()
+        conn.close()
+        
+        for item in tree.get_children():
+            tree.delete(item)
+        
+        for row in rows:
+            tree.insert("", "end", values=row)
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
 
 
 root = ctk.CTk()
@@ -90,18 +124,19 @@ def create_labeled_entry(parent, label, variable, placeholder):
 
 def create_section(title, fields, button_text, button_command):
     wrapper = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
-    wrapper.pack(pady=10, fill="both")
-    
-    section = ctk.CTkFrame(wrapper, width=700, corner_radius=12)
-    section.pack(pady=10)
-    section.pack_propagate(False)
-    
+    wrapper.pack(pady=10, fill="both", expand=True)  # Ensure the wrapper expands
+
+    section = ctk.CTkFrame(wrapper, width=700, height=300, corner_radius=12)  # Ensure height is enough
+    section.pack(pady=10, fill="both", expand=True)  # Expand the section to fit properly
+    section.pack_propagate(False)  # Prevent resizing based on content
+
     ctk.CTkLabel(section, text=title, font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
-    
+
     for label, var, placeholder in fields:
         create_labeled_entry(section, label, var, placeholder)
-    
-    ctk.CTkButton(section, text=button_text, command=button_command).pack(pady=10)
+
+    ctk.CTkButton(section, text=button_text, command=button_command).pack(pady=10, expand=True)  # Ensure the button expands
+
 
 
 team_name = ctk.StringVar()
@@ -112,6 +147,17 @@ create_section("🏟️ Add Team", [
     ("Founded Year:", team_year, "e.g. 1902"),
     ("City:", team_city, "e.g. Madrid"),
 ], "Add Team", add_team)
+
+
+coach_name = ctk.StringVar()
+coach_role = ctk.StringVar()
+coach_team_id = ctk.StringVar()
+
+create_section("🧑‍🏫 Add Coach", [
+    ("Coach Name:", coach_name, "e.g. Zinedine Zidane"),
+    ("Role:", coach_role, "e.g. Head Coach"),
+    ("Team ID:", coach_team_id, "e.g. 1"),
+], "Add Coach", add_coach)
 
 
 player_name = ctk.StringVar()
@@ -147,7 +193,8 @@ view_section.pack(pady=10)
 view_section.pack_propagate(False)
 ctk.CTkLabel(view_section, text="📋 View Players with Teams", font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
 ctk.CTkButton(view_section, text="Load Players", command=view_players).pack(pady=10)
-
+ctk.CTkLabel(view_section, text="📋 View Coaches with Teams", font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+ctk.CTkButton(view_section, text="Load Coaches", command=view_coaches).pack(pady=10)
 
 tree = ttk.Treeview(scrollable_frame, columns=("Name", "Position", "Team"), show='headings', height=10)
 tree.heading("Name", text="Player Name")

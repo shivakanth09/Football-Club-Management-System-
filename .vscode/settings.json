@@ -1,0 +1,15 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5322, 
+      "driver": "PostgreSQL",
+      "name": "Postgresconn",
+      "database": "Football-Club-Management-System",
+      "username": "####",   
+      "password": "####",   
+      "connectionTimeout": 30 
+    }
+  ]
+}
